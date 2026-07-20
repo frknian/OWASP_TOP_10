@@ -11,10 +11,9 @@ kodu tamamen masumdur — kusur bağımlılığın içindedir ve normal istekler
 Çalıştırma: uvicorn main:app --port 8060
 """
 # PORT: 8060
+import wallet_helper
 from fastapi import FastAPI
 from pydantic import BaseModel
-
-import wallet_helper
 
 app = FastAPI()
 

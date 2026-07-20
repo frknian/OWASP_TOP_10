@@ -11,10 +11,9 @@ olarak işlenir.
 Çalıştırma: uvicorn main:app --port 8081
 """
 # PORT: 8081
+import data_parser
 from fastapi import FastAPI
 from pydantic import BaseModel
-
-import data_parser
 
 app = FastAPI()
 

@@ -35,9 +35,9 @@ TOKEN_TTL_SECONDS = 15 * 60  # süreli: 15 dakika
 
 # Güvenlik sorusu/cevabı ARTIK SAKLANMIYOR — veri modelinden tamamen çıkarıldı.
 USERS = {
-    "alice": {"email": "alice@example.com", "password": "alice-original-password"},
-    "bob": {"email": "bob@example.com", "password": "bob-original-password"},
-    "carol": {"email": "carol@example.com", "password": "carol-original-password"},
+    "alice": {"email": "alice@example.com", "password": "alice-original-password"},  # nosec B105
+    "bob": {"email": "bob@example.com", "password": "bob-original-password"},      # nosec B105
+    "carol": {"email": "carol@example.com", "password": "carol-original-password"},  # nosec B105
 }
 
 # token -> {"username", "expires_at", "used"}

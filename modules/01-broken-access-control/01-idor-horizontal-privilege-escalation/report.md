@@ -2,7 +2,7 @@
 
 **Modül:** 01-broken-access-control
 **Senaryo:** Kullanıcının 'acct'/id parametresini değiştirerek başka bir kullanıcının hesap verisine erişebilmesi
-**Durum:** Tamamlandı (curl ile doğrulandı: vulnerable + fixed) — Burp Suite görsel kanıtı ileride eklenecek (şu an Burp Suite kurulu değil)
+**Durum:** Tamamlandı (curl ile doğrulandı: vulnerable + fixed) — Burp Suite görsel kanıtları için bkz. [evidence/](evidence/)
 
 > ℹ️ **Not (OWASP Top 10:2025):** Bu kategori 2025 sürümünde de A01 — Broken Access Control olarak yerini koruyor ve BOLA/BFLA ile SSRF'yi açıkça kapsıyor.
 
@@ -86,7 +86,7 @@ Bu, klasik bir **Broken Object Level Authorization (BOLA / IDOR)** zafiyetidir: 
    ```
    Alice'in oturumu ile, sadece URL'deki ID'yi `1` → `2` değiştirerek Bob'a ait email, bakiye ve telefon numarasına tam erişim sağlandı. ID'ler `AUTOINCREMENT` ile sıralı üretildiği için, saldırgan `account_id`'yi 1'den itibaren artırarak **uygulamadaki tüm kullanıcıların** verisini otomatik olarak taşıyabilir (yatay yetki yükselmesi + toplu veri sızıntısı).
 
-*(Burp Suite ile bu üç isteğin Proxy/Repeater kayıtları görsel kanıt olarak eklenecek — bkz. ilgili ekran görüntüleri.)*
+*(Burp Suite Proxy/Repeater kayıtları ve görsel kanıtlar için [evidence/](evidence/) dizinini inceleyebilirsiniz.)*
 
 ## Etki
 - **Gizlilik ihlali (Confidentiality):** Herhangi bir kayıtlı kullanıcı, kendi session'ı ile sistemdeki **her** kullanıcının email adresini, hesap bakiyesini ve telefon numarasını sırayla okuyabilir. Bu, tekil bir sızıntı değil, ID'ler üzerinde döngü kurularak **toplu (mass) veri sızıntısına** dönüştürülebilir bir zafiyettir.

@@ -2,7 +2,7 @@
 
 **Modül:** 01-broken-access-control
 **Senaryo:** Güvenlik kontrolünün (yetki kontrolü) yalnızca frontend'de uygulanması; saldırganın client-side gizlemeyi bypass edip doğrudan API'ye istek atarak yetkisi olmayan bir işlemi (kullanıcı silme) gerçekleştirebilmesi
-**Durum:** Tamamlandı (curl ile doğrulandı: vulnerable + fixed) — Burp Suite görsel kanıtı ileride eklenecek
+**Durum:** Tamamlandı (curl ile doğrulandı: vulnerable + fixed) — Burp Suite görsel kanıtları için bkz. [evidence/](evidence/)
 
 > ℹ️ **Not (OWASP Top 10:2025):** Bu kategori 2025 sürümünde de A01 — Broken Access Control olarak yerini koruyor ve BOLA/BFLA ile SSRF'yi açıkça kapsıyor.
 
@@ -149,7 +149,7 @@ curl -X DELETE http://127.0.0.1:8006/api/admin/users/2   # fixed
 | e | fixed | — | POST /reset-db | 200 | `200` reset | ✅ |
 | f | her ikisi | anonim | DELETE /users/2 | 401 | `401` "Not authenticated" | ✅ |
 
-*(Burp Suite ile bu isteklerin Proxy/Repeater kayıtları görsel kanıt olarak eklenecek — özellikle alice'in butonu görmediği dashboard ekranı + Repeater'dan atılan başarılı DELETE isteği yan yana gösterilecek.)*
+*(Burp Suite Proxy/Repeater kayıtları ve görsel kanıtlar için [evidence/](evidence/) dizinini inceleyebilirsiniz.)*
 
 ## Frontend Gizleme Mekanizması ve Neden Yanlış Bir Güvenlik Varsayımı Olduğu
 

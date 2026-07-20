@@ -32,10 +32,10 @@ password_hasher = PasswordHasher()
 # Aynı zayıf parolalar kullanılır — amaç, DOĞRU hash'lemenin bu zayıf parolaları bile
 # rainbow table'a karşı nasıl koruduğunu göstermek (zayıf parola ≠ zayıf hash).
 SEED_USERS = [
-    {"username": "alice", "password": "123456"},
-    {"username": "bob", "password": "password"},
-    {"username": "carol", "password": "qwerty"},
-    {"username": "dave", "password": "letmein"},
+    {"username": "alice", "password": "123456"},  # nosec B105
+    {"username": "bob", "password": "password"},  # nosec B105
+    {"username": "carol", "password": "qwerty"},  # nosec B105
+    {"username": "dave", "password": "letmein"},  # nosec B105
 ]
 
 

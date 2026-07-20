@@ -11,10 +11,9 @@ gizli davranışa yol açmaz.
 Çalıştırma: uvicorn main:app --port 8061
 """
 # PORT: 8061
+import wallet_helper
 from fastapi import FastAPI
 from pydantic import BaseModel
-
-import wallet_helper
 
 app = FastAPI()
 

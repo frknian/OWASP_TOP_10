@@ -2,7 +2,7 @@
 
 **Modül:** 02-security-misconfiguration
 **Senaryo:** Kurulumdan kalma bir "örnek yönetim / setup paneli"nin (`/sample-admin`) production'a taşınıp unutulması; panelin sabit kodlanmış `admin`/`admin` varsayılan kimlik bilgisiyle korunması ve doğru kimlik girildiğinde sunucuya dair system-info (sürüm/OS) sızdırması
-**Durum:** Tamamlandı (curl ile doğrulandı: vulnerable + fixed) — Burp Suite görsel kanıtı ileride eklenecek
+**Durum:** Tamamlandı (curl ile doğrulandı: vulnerable + fixed) — Burp Suite görsel kanıtları için bkz. [evidence/](evidence/)
 
 ## Bu Kategori Nedir?
 Bu kategori kod hatası değil, unutulmuş/varsayılan bırakılmış ayarlardan doğar — kurulum panelleri, açık dizin listeleme, aşırı detaylı hata mesajları, yanlış izin verilmiş depolama. Temel korunma: production ortamını sertleştirme (hardening) checklist'i, gereksiz özellik/endpoint'lerin kaldırılması, güvenli varsayılanlar.

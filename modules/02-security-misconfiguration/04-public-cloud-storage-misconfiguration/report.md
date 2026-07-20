@@ -2,7 +2,7 @@
 
 **Modül:** 02-security-misconfiguration
 **Senaryo:** Bir cloud storage "bucket"ının yanlış varsayılan erişim izinleriyle herkese açık bırakılması; nesne adını bilen anonim herhangi bir istemcinin, hiçbir kimlik doğrulama/yetkilendirme olmadan hassas veriye (`musteri_listesi.csv`) erişebilmesi
-**Durum:** Tamamlandı (curl ile doğrulandı: vulnerable + fixed) — Burp Suite görsel kanıtı ileride eklenecek
+**Durum:** Tamamlandı (curl ile doğrulandı: vulnerable + fixed) — Burp Suite görsel kanıtları için bkz. [evidence/](evidence/)
 
 > ℹ️ **Simülasyon notu:** Bu senaryo GERÇEK bir cloud servisi yerine, aynı zafiyet sınıfını (yanlış varsayılan erişim izinleri → herkese açık hassas veri) lokalde simüle etmektedir. Uygulama hiçbir üçüncü taraf/cloud servisine istek atmaz; `bucket/` dizini lokal bir mock storage'dır ve proje "sadece lokal lab" kuralına tam uyar. **Gerçek dünya karşılığı:** AWS S3 *Block Public Access*, Azure Blob *public access level* (Private/Blob/Container), GCP Cloud Storage *IAM / uniform bucket-level access* ayarları.
 

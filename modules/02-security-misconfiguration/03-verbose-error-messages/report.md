@@ -2,7 +2,7 @@
 
 **Modül:** 02-security-misconfiguration
 **Senaryo:** `GET /api/process/{item_id}` sayısal olmayan input ile yakalanmamış bir `ValueError` fırlatıyor; production'da açık kalmış "debug" davranışını taklit eden bir exception handler, yanıt gövdesinde tam stack trace ve kütüphane sürümlerini istemciye döndürüyor
-**Durum:** Tamamlandı (curl ile doğrulandı: vulnerable + fixed) — Burp Suite görsel kanıtı ileride eklenecek
+**Durum:** Tamamlandı (curl ile doğrulandı: vulnerable + fixed) — Burp Suite görsel kanıtları için bkz. [evidence/](evidence/)
 
 ## Bu Kategori Nedir?
 Bu kategori kod hatası değil, unutulmuş/varsayılan bırakılmış ayarlardan doğar — kurulum panelleri, açık dizin listeleme, aşırı detaylı hata mesajları, yanlış izin verilmiş depolama. Temel korunma: production ortamını sertleştirme (hardening) checklist'i, gereksiz özellik/endpoint'lerin kaldırılması, güvenli varsayılanlar.

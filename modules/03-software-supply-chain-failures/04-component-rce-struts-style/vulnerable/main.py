@@ -12,10 +12,9 @@ güvenilen bileşenin içindedir.
 Çalıştırma: uvicorn main:app --port 8080
 """
 # PORT: 8080
+import data_parser
 from fastapi import FastAPI
 from pydantic import BaseModel
-
-import data_parser
 
 app = FastAPI()
 

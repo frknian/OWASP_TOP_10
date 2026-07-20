@@ -38,6 +38,8 @@ templates.env.cache = None
 
 PORT_RE = re.compile(r"^# PORT:\s*(\d{4})", re.MULTILINE)
 VARIANTS = ("vulnerable", "fixed")
+# SECURE: Regex to validate path parameters and prevent path traversal / shell injection
+PARAM_RE = re.compile(r"^[0-9]{2}-[a-zA-Z0-9_-]+$")
 
 # Panel tarafından başlatılan alt süreçler: port -> Popen
 _processes: dict[int, subprocess.Popen] = {}
@@ -133,6 +135,26 @@ def _lsof_kill(port: int) -> bool:
 
 app = FastAPI(title="Web Security Lab — Control Panel")
 
+# Enforce localhost client access for security.
+# Deliberately vulnerable apps can be spawned, so the dashboard must only be exposed to localhost.
+@app.middleware("http")
+async def restrict_to_localhost(request: Request, call_next):
+    client_host = request.client.host if request.client else None
+    if client_host not in ("127.0.0.1", "::1", "localhost"):
+        return JSONResponse(
+            {"error": "Control panel is restricted to localhost access."},
+            status_code=403
+        )
+    # Check Host header to prevent DNS rebinding
+    host_header = request.headers.get("host", "")
+    host_name = host_header.split(":")[0] if host_header else ""
+    if host_name not in ("127.0.0.1", "::1", "localhost"):
+        return JSONResponse(
+            {"error": "Control panel is restricted to localhost access."},
+            status_code=403
+        )
+    return await call_next(request)
+
 # Vite dev server (5173) farklı bir origin'den istek attığında, cookie'li (credentials)
 # proxy çağrılarının çalışması için CORS gerekli. allow_credentials=True ile birlikte
 # origin'ler açıkça listelenmeli ("*" credentials'la çalışmaz).
@@ -148,10 +170,17 @@ app.add_middleware(
 @app.on_event("startup")
 def _startup() -> None:
     _refresh()
+    # High visibility security warning
+    print("\n" + "="*80)
+    print(" WARNING: WEB SECURITY LAB CONTROL PANEL STARTED ")
+    print(" This application spawns INTENTIONALLY VULNERABLE services.")
+    print(" For security reasons, it must ONLY run on localhost (127.0.0.1).")
+    print(" NEVER expose this control panel or spawned services to 0.0.0.0!")
+    print("="*80 + "\n")
 
 
 @app.get("/")
-def index():
+def index() -> RedirectResponse:
     """Ana giriş noktası: React arayüzüne (yeni landing sayfası) yönlendirir.
 
     Arayüz, frontend/dist build'i /app mount'u altında servis edilir. Teknik
@@ -160,7 +189,7 @@ def index():
 
 
 @app.get("/launcher")
-def dashboard(request: Request):
+def dashboard(request: Request) -> Response:
     """Teknik launcher: 34 senaryonun vulnerable/fixed sürümlerini manuel başlat/durdur."""
     return templates.TemplateResponse(
         request, "dashboard.html", {"scenarios": _scenarios}
@@ -168,13 +197,13 @@ def dashboard(request: Request):
 
 
 @app.get("/api/scan")
-def api_scan():
+def api_scan() -> dict:
     _refresh()
     return {"count": len(_scenarios), "scenarios": _scenarios}
 
 
 @app.get("/api/status")
-def api_status():
+def api_status() -> dict[str, bool]:
     """Bilinen tüm portların anlık durumu: {port: bool}."""
     return {str(p): _is_listening(p) for p in _known_ports()}
 
@@ -185,6 +214,16 @@ def _launch_backend(scen: dict, variant: str) -> tuple[dict | None, tuple[str, i
     workdir = scen.get(f"{variant}_path")
     if not port or not workdir:
         return None, (f"{variant} için port/yol yok", 404)
+
+    # SECURE: Prevent path traversal by resolving workdir and checking it is within MODULES_DIR
+    resolved_workdir = Path(workdir).resolve()
+    resolved_modules_dir = MODULES_DIR.resolve()
+    if not str(resolved_workdir).startswith(str(resolved_modules_dir)):
+        return None, ("Geçersiz modül dizini", 400)
+
+    # SECURE: Enforce port verification against scanned scenarios
+    if port not in _known_ports():
+        return None, ("Geçersiz port", 400)
 
     if _is_listening(port):
         return {"status": "already_running", "port": port}, None
@@ -199,7 +238,7 @@ def _launch_backend(scen: dict, variant: str) -> tuple[dict | None, tuple[str, i
     env = {**os.environ, "ENCRYPTION_KEY": _ENCRYPTION_KEY}
     proc = subprocess.Popen(
         [str(uvicorn_bin), "main:app", "--port", str(port)],
-        cwd=workdir,
+        cwd=str(workdir),
         env=env,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
@@ -209,22 +248,28 @@ def _launch_backend(scen: dict, variant: str) -> tuple[dict | None, tuple[str, i
 
 
 @app.post("/api/start/{variant}/{modul}/{senaryo}")
-def api_start(variant: str, modul: str, senaryo: str):
+def api_start(variant: str, modul: str, senaryo: str) -> Response | dict:
     if variant not in VARIANTS:
         return JSONResponse({"error": f"Geçersiz variant: {variant}"}, status_code=400)
+    # SECURE: Validate path parameters
+    if not PARAM_RE.match(modul) or not PARAM_RE.match(senaryo):
+        return JSONResponse({"error": "Geçersiz modül veya senaryo parametresi"}, status_code=400)
     scen = _find_scenario(modul, senaryo)
     if scen is None:
         return JSONResponse({"error": "Senaryo bulunamadı"}, status_code=404)
     result, err = _launch_backend(scen, variant)
     if err:
         return JSONResponse({"error": err[0]}, status_code=err[1])
-    return result
+    return result or {}
 
 
 @app.post("/api/stop/{variant}/{modul}/{senaryo}")
-def api_stop(variant: str, modul: str, senaryo: str):
+def api_stop(variant: str, modul: str, senaryo: str) -> Response | dict:
     if variant not in VARIANTS:
         return JSONResponse({"error": f"Geçersiz variant: {variant}"}, status_code=400)
+    # SECURE: Validate path parameters
+    if not PARAM_RE.match(modul) or not PARAM_RE.match(senaryo):
+        return JSONResponse({"error": "Geçersiz modül veya senaryo parametresi"}, status_code=400)
     scen = _find_scenario(modul, senaryo)
     if scen is None:
         return JSONResponse({"error": "Senaryo bulunamadı"}, status_code=404)
@@ -244,7 +289,7 @@ def api_stop(variant: str, modul: str, senaryo: str):
 
 
 @app.post("/api/stop-all")
-def api_stop_all():
+def api_stop_all() -> dict:
     """Oturum sonu temizliği: bilinen tüm portlarda çalışan süreçleri öldürür."""
     stopped = []
     for port in _known_ports():
@@ -298,9 +343,12 @@ async def _ensure_running(scen: dict, variant: str) -> tuple[int | None, tuple[s
     "/api/proxy/{variant}/{modul}/{senaryo}/{path:path}",
     methods=["GET", "POST", "DELETE"],
 )
-async def api_proxy(variant: str, modul: str, senaryo: str, path: str, request: Request):
+async def api_proxy(variant: str, modul: str, senaryo: str, path: str, request: Request) -> Response:
     if variant not in VARIANTS:
         return JSONResponse({"error": f"Geçersiz variant: {variant}"}, status_code=400)
+    # SECURE: Validate path parameters
+    if not PARAM_RE.match(modul) or not PARAM_RE.match(senaryo):
+        return JSONResponse({"error": "Geçersiz modül veya senaryo parametresi"}, status_code=400)
     scen = _find_scenario(modul, senaryo)
     if scen is None:
         return JSONResponse({"error": "Senaryo bulunamadı"}, status_code=404)

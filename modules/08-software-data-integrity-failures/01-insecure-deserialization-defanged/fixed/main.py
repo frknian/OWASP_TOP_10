@@ -20,7 +20,6 @@ Pickle hiç kullanılmaz → CWE-502'nin kök nedeni (keyfi obje deserialize etm
 Çalıştırma: uvicorn main:app --port 8221
 """
 # PORT: 8221
-import base64
 import hashlib
 import hmac
 import json

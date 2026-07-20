@@ -1,6 +1,8 @@
 # OWASP Top 10 Lab
 ### OWASP Top 10:2025 — Vulnerable & Fixed Implementations with Interactive Lab
 
+[![CI Status](https://github.com/frknian/OWASP_TOP_10/actions/workflows/ci.yml/badge.svg)](https://github.com/frknian/OWASP_TOP_10/actions)
+
 A learning and portfolio project that demonstrates web application security vulnerabilities through deliberately vulnerable mini web applications. Each vulnerability includes a **Vulnerable / Fixed** version pair, CVSS/CWE/ASVS mapping, and a professional-grade penetration testing report.
 
 Bilinçli olarak zafiyetli mini web uygulamaları üzerinde web güvenliği zafiyetlerini gösteren, her zafiyet için **Vulnerable / Fixed** sürüm çifti, CVSS/CWE/ASVS eşlemesi ve profesyonel formatta pentest raporu üreten bir öğrenme ve portföy projesi.
@@ -167,11 +169,14 @@ control-panel/         # Separate web UI launcher to manage scenarios
 `control-panel/` is a FastAPI-based dashboard to **start, stop, and interact** with scenarios under `modules/` from a single browser page. It scans the modules, reads the `# PORT: XXXX` comment at the top of each scenario's `main.py`, and spawns each scenario as a separate subprocess within its own virtual environment.
 
 #### Running the Control Panel:
+> [!WARNING]
+> This application spawns intentionally vulnerable services, hence it must never be run on `0.0.0.0` or be exposed to the internet. Always run it bound to `127.0.0.1`.
+
 ```bash
 cd control-panel
 python3 -m venv venv
 ./venv/bin/pip install -r requirements.txt
-./venv/bin/uvicorn main:app --port 9000
+./venv/bin/uvicorn main:app --host 127.0.0.1 --port 9000
 # Access in browser: http://127.0.0.1:9000
 ```
 > **Note:** If you are using Python 3.14, Jinja2 3.1.5+ is required (older Jinja2 versions are incompatible with Python 3.14 — `requirements.txt` pins this minimum version).
@@ -196,6 +201,47 @@ Each scenario contains a professional-grade pentest report (`report.md`) detaili
 - Step-by-Step Reproduction Steps using `curl`
 - Business Impact & Threat Modeling
 - Remediation Recommendations & Code Verification
+
+---
+
+### Security Notice
+> [!CAUTION]
+> * This application contains **deliberately vulnerable code** for educational and demonstration purposes.
+> * **Local Use Only:** It must strictly run on localhost (`127.0.0.1`). Never configure it to bind to `0.0.0.0` or expose the control panel or spawned services to public networks.
+
+---
+
+### Quality Assurance & Testing
+To ensure the correctness of the vulnerabilities and their mitigations:
+* We have an automated integration testing suite written in `pytest`.
+* **Testing Model:** The tests start the vulnerable or fixed backend, simulate the exploit payload, and assert that the vulnerability succeeds in the vulnerable version and gets blocked (e.g. returning `403` or `503` or sanitized output) in the fixed version.
+* **Test Command:**
+  ```bash
+  # Setup the development environment
+  python3 -m venv .venv
+  source .venv/bin/activate
+  pip install -r requirements-dev.txt
+  
+  # Run all non-slow/non-browser tests
+  PYTHONPATH=. pytest -m "not slow and not browser"
+  
+  # Check code quality and style
+  ruff check .
+  ```
+* **CI/CD:** A GitHub Actions workflow automates ruff syntax checks, blocking bandit/pip-audit security scans on `control-panel` and `fixed/` implementations, non-blocking informational scans on `vulnerable/` versions, and runs the pytest test suite.
+
+---
+
+### Burp Suite Evidence
+* For manual verification, each scenario folder contains an `evidence/` directory with a guide on how to capture, mask, and name screenshots using Burp Suite Proxy or Repeater.
+* See the central [BURP_EVIDENCE_GUIDE.md](docs/BURP_EVIDENCE_GUIDE.md) for step-by-step setup and masking instructions.
+
+---
+
+### Demo Video & GIF
+* Learn how to record and present the lab using our [DEMO_RECORDING_GUIDE.md](docs/DEMO_RECORDING_GUIDE.md) and [DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md).
+* *Preview GIF Placeholder (to be updated when preview.gif is recorded)*
+<!-- ![OWASP Top 10 Lab Preview](assets/demo/owasp-lab-preview.gif) -->
 
 ---
 
@@ -353,11 +399,14 @@ control-panel/         # Senaryoları başlatıp durduran ayrı iç araç (launc
 `control-panel/`, `modules/` altındaki senaryoları tek bir web arayüzünden **başlatıp durdurmak** için ayrı bir FastAPI uygulamasıdır. Senaryo kodlarına hiç dokunmaz; her `main.py`'nin en üstündeki `# PORT: XXXX` işaretini okuyarak hangi uygulamanın hangi portta çalışacağını öğrenir ve her birini kendi `venv`'iyle ayrı bir subprocess olarak ayağa kaldırır.
 
 #### Çalıştırma:
+> [!WARNING]
+> Bu uygulama bilinçli olarak zafiyetli servisleri başlatabildiği için hiçbir zaman `0.0.0.0` adresinde veya internet erişimine açık şekilde çalıştırılmamalıdır. Her zaman `127.0.0.1` adresine bağlı olarak çalıştırın.
+
 ```bash
 cd control-panel
 python3 -m venv venv
 ./venv/bin/pip install -r requirements.txt
-./venv/bin/uvicorn main:app --port 9000
+./venv/bin/uvicorn main:app --host 127.0.0.1 --port 9000
 # tarayıcı: http://127.0.0.1:9000
 ```
 > **Not:** Python 3.14 kullanıyorsanız Jinja2 3.1.5+ gerekir (eski Jinja2 sürümleri Python 3.14 ile uyumsuz — `requirements.txt` bu minimum sürümü sabitler).
@@ -375,3 +424,45 @@ python3 -m venv venv
 
 ### Rapor Formatı
 Her bulgu için: Başlık, CVSS 3.1 skoru ve vektörü, Risk Seviyesi (Low/Med/High/Critical), ilgili OWASP ASVS kontrol maddesi, Açıklama, Repro adımları, Etki, Remediation önerisi.
+
+---
+
+### Güvenlik Bildirimi (Security Notice)
+> [!CAUTION]
+> * Bu uygulama, eğitim ve gösterim amacıyla **bilinçli olarak güvenlik açıkları (zafiyetler) barındırmaktadır**.
+> * **Sadece Yerel Kullanım:** Uygulama kesinlikle yerel bilgisayarda (`127.0.0.1`) çalıştırılmalıdır. Kontrol panelini veya başlatılan alt uygulamaları hiçbir zaman `0.0.0.0` adresine bağlamayın veya dış ağlara açmayın.
+
+---
+
+### Kalite Güvence ve Testler (Quality Assurance)
+Zafiyetlerin ve çözüm yollarının doğruluğunu garanti altına almak amacıyla:
+* `pytest` ile yazılmış otomatik entegrasyon test altyapısı mevcuttur.
+* **Doğrulama Modeli:** Testler ilgili senaryonun backend'ini başlatır, saldırı payload'unu gönderir ve vulnerable sürümde saldırının başarılı olduğunu, fixed sürümde ise engellendiğini (örn: `403`, `503` veya temiz veri dönerek) assert eder.
+* **Test Çalıştırma Komutları:**
+  ```bash
+  # Geliştirici ve test ortamı kurulumu
+  python3 -m venv .venv
+  source .venv/bin/activate
+  pip install -r requirements-dev.txt
+  
+  # Yavaş ve tarayıcı gerektirmeyen testleri çalıştır
+  PYTHONPATH=. pytest -m "not slow and not browser"
+  
+  # Kod kalitesi kontrolü
+  ruff check .
+  ```
+* **CI/CD Süreci:** GitHub Actions entegrasyonu sayesinde her push ve pull request işleminde ruff linter kontrolü, `control-panel` ve `fixed/` için blocking güvenlik taramaları (`bandit`, `pip-audit`), `vulnerable/` klasörleri için non-blocking eğitim taramaları ve pytest testleri otomatik olarak koşturulur.
+
+---
+
+### Burp Suite Görsel Kanıtları (Burp Evidence)
+* Manuel doğrulama yapmak isteyenler için her senaryo klasöründe bir `evidence/` dizini bulunur. Burada isteklerin Burp Suite Proxy/Repeater ile nasıl yakalanıp isimlendirileceği açıklanmıştır.
+* Adım adım proxy kurulumu ve görsel yakalama rehberi için [BURP_EVIDENCE_GUIDE.md](docs/BURP_EVIDENCE_GUIDE.md) dosyasına göz atabilirsiniz.
+
+---
+
+### Demo Video ve GIF Altyapısı (Demo)
+* Ekran kaydı alma ve sunum akışı için hazırladığım [DEMO_RECORDING_GUIDE.md](docs/DEMO_RECORDING_GUIDE.md) ve [DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) rehberlerini inceleyebilirsiniz.
+* *Preview GIF Alanı (Video/GIF kaydı yapıldığında güncellenecektir)*
+<!-- ![OWASP Top 10 Lab Önizleme](assets/demo/owasp-lab-preview.gif) -->
+

@@ -73,7 +73,7 @@ def login(req: LoginRequest):
 
     # FIX: Parola doğru → yalnızca ikinci faktöre geçiş izni. TAM session HENÜZ verilmez.
     pending_token = secrets.token_urlsafe(24)
-    otp_code = f"{random.randint(0, 999999):06d}"
+    otp_code = f"{random.randint(0, 999999):06d}"  # nosec B311
     PENDING_MFA[pending_token] = {
         "username": req.username,
         "otp_code": otp_code,

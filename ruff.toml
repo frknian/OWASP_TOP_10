@@ -1,0 +1,12 @@
+# Ruff configuration
+
+# Exclude directory listing mock files that are intentionally incomplete/pseudo-code
+extend-exclude = [
+    "modules/02-security-misconfiguration/02-directory-listing-source-exposure/vulnerable/files",
+    "modules/02-security-misconfiguration/02-directory-listing-source-exposure/fixed/files"
+]
+
+[lint]
+select = ["E", "F", "W", "I"]
+# E501: line too long
+ignore = ["E501"]

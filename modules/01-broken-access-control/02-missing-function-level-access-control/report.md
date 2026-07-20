@@ -2,7 +2,7 @@
 
 **Modül:** 01-broken-access-control
 **Senaryo:** Sadece adminlerin erişebilmesi gereken bir yönetim endpoint'ine, normal veya giriş yapmamış bir kullanıcının direkt URL ile erişebilmesi
-**Durum:** Tamamlandı (curl ile doğrulandı: vulnerable + fixed) — Burp Suite görsel kanıtı ileride eklenecek
+**Durum:** Tamamlandı (curl ile doğrulandı: vulnerable + fixed) — Burp Suite görsel kanıtları için bkz. [evidence/](evidence/)
 
 > ℹ️ **Not (OWASP Top 10:2025):** Bu kategori 2025 sürümünde de A01 — Broken Access Control olarak yerini koruyor ve BOLA/BFLA ile SSRF'yi açıkça kapsıyor.
 
@@ -126,7 +126,7 @@ curl -i -b admin_cookies.txt http://127.0.0.1:8004/api/admin/users
 | c | Alice (user) | fixed:8004 | 403 | `403 Admin privileges required` | ✅ |
 | d | Admin | fixed:8004 | 200 | `200` + tüm veri | ✅ |
 
-*(Burp Suite ile bu isteklerin Proxy/Repeater kayıtları görsel kanıt olarak eklenecek.)*
+*(Burp Suite Proxy/Repeater kayıtları ve görsel kanıtlar için [evidence/](evidence/) dizinini inceleyebilirsiniz.)*
 
 ## Kavramsal Fark: Function-Level vs Object-Level Access Control
 

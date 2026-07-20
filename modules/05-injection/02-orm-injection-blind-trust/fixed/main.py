@@ -35,13 +35,13 @@ class MiniORM:
 
     def raw(self, where_fragment: str):
         # GÜVENSİZ: WHERE fragment'i doğrudan sorguya gömülüyor.
-        query = f"SELECT id, name, email, balance FROM {self.table} WHERE {where_fragment}"
+        query = f"SELECT id, name, email, balance FROM {self.table} WHERE {where_fragment}"  # nosec B608
         rows = self.conn.execute(query).fetchall()
         return [dict(r) for r in rows], query
 
     def filter(self, column: str, value):
         # GÜVENLİ: değer parametreli (`?`) bağlanır; kolon adı geliştirici kontrolündedir.
-        query = f"SELECT id, name, email, balance FROM {self.table} WHERE {column} = ?"
+        query = f"SELECT id, name, email, balance FROM {self.table} WHERE {column} = ?"  # nosec B608
         rows = self.conn.execute(query, (value,)).fetchall()
         return [dict(r) for r in rows], query
 

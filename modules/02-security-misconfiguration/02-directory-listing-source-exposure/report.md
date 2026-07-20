@@ -2,7 +2,7 @@
 
 **Modül:** 02-security-misconfiguration
 **Senaryo:** `files/` klasörünü listeleyen bir directory-listing endpoint'i (`GET /files/`) ve klasördeki her dosyayı ham servis eden `GET /files/{filename}`; klasörde unutulmuş `old_admin_utils.py` kaynak dosyası, canlı DB parolasını (hardcoded credential) ve bir IDOR tasarım kusurunu ifşa eden yorumu içeriyor
-**Durum:** Tamamlandı (curl ile doğrulandı: vulnerable + fixed) — Burp Suite görsel kanıtı ileride eklenecek
+**Durum:** Tamamlandı (curl ile doğrulandı: vulnerable + fixed) — Burp Suite görsel kanıtları için bkz. [evidence/](evidence/)
 
 ## Bu Kategori Nedir?
 Bu kategori kod hatası değil, unutulmuş/varsayılan bırakılmış ayarlardan doğar — kurulum panelleri, açık dizin listeleme, aşırı detaylı hata mesajları, yanlış izin verilmiş depolama. Temel korunma: production ortamını sertleştirme (hardening) checklist'i, gereksiz özellik/endpoint'lerin kaldırılması, güvenli varsayılanlar.

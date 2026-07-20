@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
-from fastapi import Depends, FastAPI, HTTPException, Request, status
+from fastapi import FastAPI, HTTPException, Request, status
 from pydantic import BaseModel
 from starlette.middleware.sessions import SessionMiddleware
 

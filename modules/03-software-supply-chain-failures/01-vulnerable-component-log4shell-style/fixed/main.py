@@ -12,10 +12,9 @@ remediation) gerçekleşir.
 Çalıştırma: uvicorn main:app --port 8051
 """
 # PORT: 8051
+import vulnerable_logger
 from fastapi import FastAPI
 from pydantic import BaseModel
-
-import vulnerable_logger
 
 app = FastAPI()
 

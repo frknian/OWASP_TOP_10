@@ -16,10 +16,9 @@ bir bileşenin zafiyeti sizin uygulamanızı da zafiyetli yapar.
 Çalıştırma: uvicorn main:app --port 8050
 """
 # PORT: 8050
+import vulnerable_logger
 from fastapi import FastAPI
 from pydantic import BaseModel
-
-import vulnerable_logger
 
 app = FastAPI()
 

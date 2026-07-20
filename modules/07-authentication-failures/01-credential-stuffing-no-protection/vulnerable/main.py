@@ -18,7 +18,6 @@ kaçınılmaz kılar.
 Çalıştırma: uvicorn main:app --port 8190
 """
 # PORT: 8190
-from contextlib import asynccontextmanager
 
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError

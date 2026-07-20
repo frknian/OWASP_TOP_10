@@ -17,9 +17,8 @@ simülasyonunun çıktısını görüntülemek için vardır.
 # PORT: 8070
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
-
 import awesome_utils
+from fastapi import FastAPI
 
 # Post-install simülasyonunun çıktısını /status üzerinden görebilmek için saklıyoruz.
 _STARTUP_REPORT = {"postinstall_output": None}

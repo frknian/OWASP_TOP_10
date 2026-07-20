@@ -13,9 +13,8 @@ simülasyonu tetiklenmez. Paket yalnızca açıkça çağrıldığında ilan ett
 # PORT: 8071
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
-
 import awesome_utils
+from fastapi import FastAPI
 
 
 @asynccontextmanager
