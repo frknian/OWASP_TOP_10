@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Web Security Lab — Control Panel</title>
+  <style>
+    :root {
+      --bg: #0f1115; --panel: #171a21; --border: #262b36; --text: #e6e9ef;
+      --muted: #8b94a7; --green: #35c759; --red: #ff4d4f; --gray: #4a5163;
+      --accent: #3b82f6; --accent-hover: #2f6fd6;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text);
+      font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    header { padding: 18px 24px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    h1 { font-size: 17px; margin: 0; font-weight: 600; }
+    .sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
+    main { padding: 20px 24px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+    th { color: var(--muted); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+    tr:hover td { background: #12151b; }
+    .modul { color: var(--muted); font-size: 12px; }
+    .senaryo { font-weight: 500; }
+    .cell { display: flex; align-items: center; gap: 8px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--gray);
+      flex: none; box-shadow: 0 0 0 2px rgba(255,255,255,.03); }
+    .dot.up { background: var(--green); }
+    .dot.down { background: var(--red); }
+    .port { color: var(--muted); font-variant-numeric: tabular-nums; min-width: 38px; }
+    button { font: inherit; border: 1px solid var(--border); background: var(--panel);
+      color: var(--text); padding: 4px 10px; border-radius: 6px; cursor: pointer; }
+    button:hover { border-color: var(--accent); }
+    button.start { color: #b6f0c2; }
+    button.stop { color: #ffc4c4; }
+    button:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .actions { display: flex; gap: 6px; }
+    .toolbar { display: flex; gap: 10px; align-items: center; }
+    #toast { position: fixed; bottom: 18px; right: 18px; background: var(--panel);
+      border: 1px solid var(--border); padding: 10px 14px; border-radius: 8px;
+      opacity: 0; transition: opacity .2s; max-width: 380px; font-size: 13px; }
+    #toast.show { opacity: 1; }
+    .na { color: var(--gray); font-size: 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Web Security Lab — Control Panel</h1>
+      <div class="sub">Faz 1: Launcher · {{ scenarios|length }} senaryo bulundu · panel :9000</div>
+    </div>
+    <div class="toolbar">
+      <button onclick="rescan()">↻ Yeniden Tara</button>
+      <button class="btn-primary" onclick="stopAll()">■ Tümünü Durdur</button>
+    </div>
+  </header>
+
+  <main>
+    <table>
+      <thead>
+        <tr>
+          <th>Modül / Senaryo</th>
+          <th>Vulnerable</th>
+          <th>Fixed</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in scenarios %}
+        <tr>
+          <td>
+            <div class="modul">{{ s.modul }}</div>
+            <div class="senaryo">{{ s.senaryo }}</div>
+          </td>
+          {% for variant in ["vulnerable", "fixed"] %}
+          {% set port = s[variant + "_port"] %}
+          <td>
+            {% if port %}
+            <div class="cell">
+              <span class="dot" id="dot-{{ port }}"></span>
+              <span class="port">{{ port }}</span>
+              <div class="actions">
+                <button class="start" onclick="ctl('start', '{{ variant }}', '{{ s.modul }}', '{{ s.senaryo }}')">Başlat</button>
+                <button class="stop" onclick="ctl('stop', '{{ variant }}', '{{ s.modul }}', '{{ s.senaryo }}')">Durdur</button>
+              </div>
+            </div>
+            {% else %}
+            <span class="na">— yok —</span>
+            {% endif %}
+          </td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </main>
+
+  <div id="toast"></div>
+
+  <script>
+    function toast(msg) {
+      const t = document.getElementById("toast");
+      t.textContent = msg; t.classList.add("show");
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => t.classList.remove("show"), 2600);
+    }
+
+    async function ctl(action, variant, modul, senaryo) {
+      try {
+        const r = await fetch(`/api/${action}/${variant}/${modul}/${senaryo}`, { method: "POST" });
+        const data = await r.json();
+        if (!r.ok) { toast("Hata: " + (data.error || r.status)); }
+        else { toast(`${variant} ${senaryo}: ${data.status}` + (data.port ? ` (:${data.port})` : "")); }
+      } catch (e) { toast("İstek başarısız: " + e); }
+      setTimeout(refreshStatus, 400);
+    }
+
+    async function stopAll() {
+      const r = await fetch("/api/stop-all", { method: "POST" });
+      const data = await r.json();
+      toast("Durduruldu: " + (data.stopped.length ? data.stopped.join(", ") : "hiçbiri"));
+      setTimeout(refreshStatus, 400);
+    }
+
+    function rescan() {
+      fetch("/api/scan").then(() => location.reload());
+    }
+
+    async function refreshStatus() {
+      try {
+        const r = await fetch("/api/status");
+        const st = await r.json();
+        for (const [port, up] of Object.entries(st)) {
+          const dot = document.getElementById("dot-" + port);
+          if (dot) { dot.classList.toggle("up", up); dot.classList.toggle("down", !up); }
+        }
+      } catch (e) { /* sessiz geç */ }
+    }
+
+    refreshStatus();
+    setInterval(refreshStatus, 3000);
+  </script>
+</body>
+</html>

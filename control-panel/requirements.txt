@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+jinja2>=3.1.5
+markupsafe>=3.0.0
+# NOT: env.cache = None workaround'u da gerekli, bkz. jinja pallets#2180
+httpx

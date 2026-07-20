@@ -1,0 +1,289 @@
+/* Landing sayfası — tasarım referansındaki görsel dil:
+   zemin #080D1A, amber aksan #FBBF24, vulnerable #F4635E, fixed #34D399,
+   metin #6B7690 → #E6EBF5, monospace/terminal estetiği.
+   Tüm stiller .landing kapsamında — lab görünümünün (App.css) stillerine karışmaz. */
+.landing {
+  --l-bg: #080d1a;
+  --l-panel: #0c1424;
+  --l-panel2: #0a1120;
+  --l-border: rgba(230, 235, 245, 0.09);
+  --l-amber: #fbbf24;
+  --l-red: #f4635e;
+  --l-green: #34d399;
+  --l-muted: #6b7690;
+  --l-text: #e6ebf5;
+  min-height: 100vh;
+  background:
+    radial-gradient(900px 480px at 88% -8%, rgba(251, 191, 36, 0.07), transparent 62%),
+    radial-gradient(700px 500px at -10% 30%, rgba(52, 211, 153, 0.04), transparent 60%),
+    var(--l-bg);
+  color: var(--l-text);
+  font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, "Courier New", monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  padding-bottom: 48px;
+}
+.landing b { font-weight: 600; }
+.l-amber { color: var(--l-amber); }
+.l-red { color: var(--l-red); }
+.l-green { color: var(--l-green); }
+
+.l-header, .l-hero, .l-stats, .l-explore, .l-footer {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+/* 1 — Header */
+.l-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 22px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--l-border);
+}
+.l-logo { font-weight: 700; letter-spacing: 0.04em; }
+.l-logo span { color: var(--l-muted); font-weight: 400; }
+.l-header-right { color: var(--l-muted); font-size: 12px; }
+
+/* 2 — Hero */
+.l-hero {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 48px;
+  align-items: center;
+  padding-top: 72px;
+  padding-bottom: 56px;
+}
+.l-tag {
+  color: var(--l-muted);
+  font-size: 13px;
+  margin-bottom: 18px;
+}
+.l-title {
+  margin: 0 0 20px;
+  font-size: 52px;
+  line-height: 1.08;
+  letter-spacing: 0.01em;
+  font-weight: 800;
+}
+.l-cursor { animation: l-blink 1.1s steps(1) infinite; }
+@keyframes l-blink { 50% { opacity: 0; } }
+.l-lead {
+  color: #aab4c8;
+  max-width: 54ch;
+  margin: 0 0 30px;
+  font-size: 14.5px;
+}
+.l-cta {
+  background: var(--l-amber);
+  color: #1a1405;
+  border: 1px solid var(--l-amber);
+  font: inherit;
+  font-weight: 700;
+  padding: 13px 26px;
+  border-radius: 8px;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+}
+.l-cta:hover { filter: brightness(1.08); }
+.l-cta.ghost {
+  background: transparent;
+  color: var(--l-amber);
+  border-color: rgba(251, 191, 36, 0.45);
+}
+.l-cta.ghost:hover { background: rgba(251, 191, 36, 0.1); filter: none; }
+
+/* Terminal kartı (hero sağ) — tarama çıktısı simülasyonu, içerik gerçek */
+.l-terminal {
+  background: var(--l-panel2);
+  border: 1px solid var(--l-border);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+.l-term-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--l-border);
+  background: rgba(255, 255, 255, 0.02);
+}
+.l-term-head i { width: 11px; height: 11px; border-radius: 50%; }
+.l-term-head i.r { background: var(--l-red); }
+.l-term-head i.y { background: var(--l-amber); }
+.l-term-head i.g { background: var(--l-green); }
+.l-term-head span { margin-left: 8px; color: var(--l-muted); font-size: 12px; }
+.l-term-body { padding: 16px 18px 18px; font-size: 12.8px; }
+.l-cmd { color: var(--l-text); font-weight: 600; }
+.l-term-sub { color: var(--l-muted); margin: 4px 0 12px; }
+.l-term-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 3px 0;
+  color: #aab4c8;
+}
+.l-term-code { color: var(--l-amber); font-weight: 600; }
+.l-term-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+.l-term-count { color: var(--l-muted); flex: none; }
+.l-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--l-green);
+  flex: none;
+  box-shadow: 0 0 6px rgba(52, 211, 153, 0.7);
+}
+.l-dot.amber { background: var(--l-amber); box-shadow: 0 0 6px rgba(251, 191, 36, 0.6); }
+.l-term-done {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--l-border);
+  color: var(--l-green);
+}
+
+/* 3 — İstatistik rozetleri */
+.l-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-bottom: 64px;
+}
+.l-chip {
+  border: 1px solid var(--l-border);
+  background: var(--l-panel);
+  color: #aab4c8;
+  padding: 9px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+}
+.l-chip b { color: var(--l-amber); }
+
+/* 4 — On riski keşfet */
+.l-explore { padding-bottom: 40px; }
+.l-h2 {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0 0 26px;
+}
+.l-h2 .l-amber { font-weight: 400; font-size: 15px; }
+.l-explore-grid {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 20px;
+  align-items: start;
+}
+.l-list { display: flex; flex-direction: column; gap: 6px; }
+.l-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  color: var(--l-text);
+  font: inherit;
+  padding: 12px 14px;
+  cursor: pointer;
+}
+.l-row:hover { background: rgba(255, 255, 255, 0.03); }
+.l-row.active {
+  background: var(--l-panel);
+  border-color: rgba(251, 191, 36, 0.5);
+}
+.l-row-code { color: var(--l-amber); font-weight: 700; flex: none; }
+.l-row-title { flex: 1; }
+.l-row-count {
+  color: var(--l-muted);
+  font-size: 12px;
+  border: 1px solid var(--l-border);
+  border-radius: 999px;
+  padding: 1px 9px;
+  flex: none;
+}
+.l-row.active .l-row-count { border-color: rgba(251, 191, 36, 0.4); color: var(--l-amber); }
+
+/* Sağ detay paneli — GERÇEK modül özeti (sahte kod/exploit terminali yok) */
+.l-detail {
+  background: var(--l-panel);
+  border: 1px solid var(--l-border);
+  border-radius: 12px;
+  padding: 24px 26px;
+  position: sticky;
+  top: 20px;
+}
+.l-detail-head { display: flex; gap: 16px; align-items: flex-start; }
+.l-code-badge {
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.45);
+  color: var(--l-amber);
+  font-weight: 800;
+  padding: 8px 12px;
+  border-radius: 9px;
+  flex: none;
+}
+.l-detail-head h3 { margin: 0 0 4px; font-size: 18px; }
+.l-change { color: var(--l-muted); font-size: 12px; }
+.l-desc { color: #aab4c8; margin: 16px 0; }
+.l-cwes { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.l-cwe {
+  font-size: 11.5px;
+  color: var(--l-red);
+  border: 1px solid rgba(244, 99, 94, 0.4);
+  background: rgba(244, 99, 94, 0.08);
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+.l-scen-head { color: var(--l-muted); font-size: 12.5px; margin-bottom: 8px; }
+.l-scen-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  border: 1px solid var(--l-border);
+  background: var(--l-panel2);
+  border-radius: 9px;
+  padding: 14px 16px;
+}
+.l-scen { display: flex; align-items: center; gap: 10px; color: #cdd6e6; font-size: 13px; }
+.l-detail-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+.l-foot-note { color: var(--l-muted); font-size: 12.5px; }
+
+/* Footer */
+.l-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--l-border);
+  padding-top: 22px;
+  color: var(--l-muted);
+  font-size: 12px;
+}
+.l-footer a { color: var(--l-amber); text-decoration: none; }
+.l-footer a:hover { text-decoration: underline; }
+
+@media (max-width: 900px) {
+  .l-hero { grid-template-columns: 1fr; gap: 32px; padding-top: 48px; }
+  .l-title { font-size: 38px; }
+  .l-explore-grid { grid-template-columns: 1fr; }
+  .l-detail { position: static; }
+}

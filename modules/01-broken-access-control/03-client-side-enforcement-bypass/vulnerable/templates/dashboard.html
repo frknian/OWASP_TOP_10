@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard — Web Security Lab</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 520px; margin: 40px auto; padding: 0 16px; }
+    h1 { font-size: 1.3rem; }
+    .card { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin: 16px 0; }
+    .field { display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.95rem; }
+    .field span:first-child { color: #666; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; background: #eee; }
+    .badge.admin { background: #ffe0e0; color: #900; }
+    /* "Delete User" paneli varsayılan olarak GİZLİ. Sadece JS, rolü "admin" görürse açar. */
+    #admin-panel { display: none; border-color: #f0a0a0; background: #fff8f8; }
+    button { padding: 8px 16px; cursor: pointer; }
+    input { padding: 8px; width: 80px; }
+    #delete-result { margin-top: 10px; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <h1>Dashboard</h1>
+
+  <div class="card">
+    <div class="field"><span>ID</span><span>{{ user.id }}</span></div>
+    <div class="field"><span>Username</span><span>{{ user.username }}</span></div>
+    <div class="field"><span>Email</span><span>{{ user.email }}</span></div>
+    <div class="field"><span>Balance</span><span>{{ user.balance }}</span></div>
+    <div class="field"><span>Phone</span><span>{{ user.phone_number }}</span></div>
+    <div class="field">
+      <span>Role</span>
+      <span class="badge {{ 'admin' if user.role == 'admin' else '' }}">{{ user.role }}</span>
+    </div>
+  </div>
+
+  <!--
+    ADMIN-ONLY PANEL — bu senaryonun can alıcı noktası.
+    Panel DOM'da mevcut ama CSS ile display:none. Aşağıdaki JS, sunucudan gelen role
+    değerine bakıp SADECE "admin" ise paneli görünür yapıyor. alice/bob gibi normal
+    kullanıcılar bu paneli/butonu ASLA göremez.
+
+    ⚠️ Ders: Bu gizleme yalnızca bir UX/görünürlük kontrolüdür, bir GÜVENLİK kontrolü
+    DEĞİLDİR. Butonu görmeyen bir kullanıcı bile, altındaki DELETE /api/admin/users/{id}
+    endpoint'ine tarayıcı DevTools / curl / Burp üzerinden doğrudan istek atabilir.
+    Güvenlik, mutlaka sunucuda (fixed sürümdeki rol kontrolü gibi) tekrar uygulanmalıdır.
+  -->
+  <div id="admin-panel" class="card">
+    <strong>Admin — Delete User</strong>
+    <p style="font-size:0.9rem;color:#666;">Silinecek kullanıcının ID'sini girin:</p>
+    <input id="target-id" type="number" min="1" placeholder="id">
+    <button id="delete-btn">Delete User</button>
+    <div id="delete-result"></div>
+  </div>
+
+  <script>
+    // Sunucu tarafından render edilen kullanıcı rolü. Frontend'in TEK yetki kaynağı bu
+    // (vulnerable sürümde). Jinja bu değeri güvenli biçimde JSON'a gömer.
+    const currentUserRole = {{ user.role | tojson }};
+
+    // Client-side "yetkilendirme": panel yalnızca admin için açılır.
+    if (currentUserRole === "admin") {
+      document.getElementById("admin-panel").style.display = "block";
+    }
+
+    // Delete butonu → DELETE /api/admin/users/{id}. Bu istek session cookie'si ile
+    // gider; sunucu tarafında yetki kontrolü olup olmaması vulnerable/fixed farkıdır.
+    document.getElementById("delete-btn").addEventListener("click", async () => {
+      const id = document.getElementById("target-id").value;
+      const out = document.getElementById("delete-result");
+      out.textContent = "";
+      if (!id) { out.textContent = "Bir ID girin."; return; }
+      const res = await fetch(`/api/admin/users/${id}`, { method: "DELETE" });
+      const data = await res.json().catch(() => ({}));
+      out.textContent = `HTTP ${res.status} — ` + (data.message || data.detail || "");
+    });
+  </script>
+</body>
+</html>

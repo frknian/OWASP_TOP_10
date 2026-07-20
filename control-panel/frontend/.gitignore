@@ -1,0 +1,2 @@
+node_modules/
+# dist/ (commented out to allow tracking of pre-built frontend)

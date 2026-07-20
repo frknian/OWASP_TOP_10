@@ -1,0 +1,4 @@
+fastapi
+uvicorn[standard]
+itsdangerous
+argon2-cffi
