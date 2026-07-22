@@ -58,3 +58,8 @@ service-account.json
 .gitignore.save
 # Claude Code proje talimatları (kişisel — repoda paylaşılmaz)
 CLAUDE.md
+
+# SQLite runtime artefaktları (uygulama başlarken otomatik üretilir)
+*.db
+*.sqlite
+*.sqlite3

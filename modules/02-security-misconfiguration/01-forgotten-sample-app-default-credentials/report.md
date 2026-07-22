@@ -102,7 +102,7 @@ Vulnerable yanıt gövdesi (gerçek çıktı):
 ```json
 {"message": "Welcome to the Acme setup panel",
  "system_info": {"python_version": "3.14.6", "fastapi_version": "0.139.0",
-                 "os": "Darwin 25.5.0", "hostname": "Furkan-MacBook-Air.local"}}
+                 "os": "Darwin 25.5.0", "hostname": "lab-host.local"}}
 ```
 Fixed yanıt gövdesi: `{"detail": "Not Found"}` (FastAPI'nin bilinmeyen route için verdiği varsayılan 404).
 
