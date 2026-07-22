@@ -1,0 +1,4 @@
+{
+  "buildCommand": "npm --prefix control-panel/frontend install && npm --prefix control-panel/frontend run build",
+  "outputDirectory": "control-panel/frontend/dist"
+}

@@ -19,6 +19,7 @@ import socket
 import subprocess
 from pathlib import Path
 
+# pyrefly: ignore [missing-import]
 import httpx
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -247,7 +248,9 @@ def _launch_backend(scen: dict, variant: str) -> tuple[dict | None, tuple[str, i
     return {"status": "started", "port": port, "pid": proc.pid}, None
 
 
-@app.post("/api/start/{variant}/{modul}/{senaryo}")
+# response_model=None: dönüş tipi Response | dict olduğundan FastAPI'nin yanıt modelini
+# anotasyondan türetmesi engellenir (aksi halde başlatma sırasında FastAPIError verir).
+@app.post("/api/start/{variant}/{modul}/{senaryo}", response_model=None)
 def api_start(variant: str, modul: str, senaryo: str) -> Response | dict:
     if variant not in VARIANTS:
         return JSONResponse({"error": f"Geçersiz variant: {variant}"}, status_code=400)
@@ -263,7 +266,7 @@ def api_start(variant: str, modul: str, senaryo: str) -> Response | dict:
     return result or {}
 
 
-@app.post("/api/stop/{variant}/{modul}/{senaryo}")
+@app.post("/api/stop/{variant}/{modul}/{senaryo}", response_model=None)
 def api_stop(variant: str, modul: str, senaryo: str) -> Response | dict:
     if variant not in VARIANTS:
         return JSONResponse({"error": f"Geçersiz variant: {variant}"}, status_code=400)

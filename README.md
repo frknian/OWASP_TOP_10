@@ -1,7 +1,7 @@
 # OWASP Top 10 Lab
 ### OWASP Top 10:2025 — Vulnerable & Fixed Implementations with Interactive Lab
 
-[![CI Status](https://github.com/frknian/OWASP_TOP_10/actions/workflows/ci.yml/badge.svg)](https://github.com/frknian/OWASP_TOP_10/actions)
+[![CI Status](https://github.com/frknian/owasp-top-10-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/frknian/owasp-top-10-lab/actions)
 
 A learning and portfolio project that demonstrates web application security vulnerabilities through deliberately vulnerable mini web applications. Each vulnerability includes a **Vulnerable / Fixed** version pair, CVSS/CWE/ASVS mapping, and a professional-grade penetration testing report.
 
